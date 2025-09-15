@@ -12,9 +12,11 @@
         require_once('../includes/Validator.php');
         require_once('../includes/Database.php');
         require_once('../controllers/AuthController.php');
+        require_once('../controllers/PostController.php');
         $val = new Validator;
         $db = new Database;
         $auth = new AuthController($db, $val);
+        $post = new PostController;
 
         switch ($action) {
             case 'signup':
@@ -22,6 +24,17 @@
                 break;
             case 'login':
                 $auth->login();
+                break;
+            case 'addpost':
+                $post->add();
+                break;
+            case 'editpost':
+                $post_id = $_REQUEST['postid'];
+                $post->edit($post_id);
+                break;
+            case 'deletepost':
+                $post_id = $_REQUEST['post'];
+                $post->delete($post_id);
                 break;
             default: 
                 break;

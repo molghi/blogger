@@ -100,11 +100,59 @@
         // ================================================================================================
 
         public function get_user_posts ($user_id) {
-            $sql = 'SELECT * FROM posts WHERE user_id = ?';
+            $sql = 'SELECT * FROM posts WHERE user_id = ? ORDER BY created_at DESC';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$user_id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         // ================================================================================================
+        
+        public function create_post ($title, $body, $categories, $image_path, $visibility, $user_id) {
+            $sql = "INSERT INTO posts (title, body, categories, image_path, visibility, user_id) VALUES (:title, :body, :categories, :image_path, :visibility, :user_id)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(":title", $title);
+            $stmt->bindParam(":body", $body);
+            $stmt->bindParam(":categories", $categories);
+            $stmt->bindParam(":image_path", $image_path);
+            $stmt->bindParam(":visibility", $visibility);
+            $stmt->bindParam(":user_id", $user_id);
+            $stmt->execute();
+        }
+        
+        // ================================================================================================
+
+        public function delete_post ($user_id, $post_id) {
+            $sql = 'DELETE FROM posts WHERE id = :id AND user_id = :user_id';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(":user_id", $user_id);
+            $stmt->bindParam(":id", $post_id);
+            $stmt->execute();
+        }
+
+        // ================================================================================================
+
+        public function get_post ($user_id, $post_id) {
+            $sql = 'SELECT * FROM posts WHERE id = :id AND user_id = :user_id LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(":id", $post_id);
+            $stmt->bindParam(":user_id", $user_id);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id) {
+            $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(":title", $title);
+            $stmt->bindParam(":body", $body);
+            $stmt->bindParam(":categories", $categories);
+            $stmt->bindParam(":image_path", $cover_image);
+            $stmt->bindParam(":visibility", $visibility);
+            $stmt->bindParam(":user_id", $user_id);
+            $stmt->bindParam(":id", $post_id);
+            $stmt->execute();
+        }
     }

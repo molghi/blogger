@@ -38,7 +38,7 @@
         <!-- Buttons or stuff -->
         <div class="flex space-x-4">
             <?php if ($user_id): ?>
-                <a href="../public/add-post.php" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md active:opacity-70 add-post-btn">Add Post</a>
+                <a href="../public/post-form.php?action=add" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md active:opacity-70 add-post-btn">Add Post</a>
                 <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md active:opacity-70 logout-btn">Log Out</button>
             <?php else: ?>
                 <span class="italic">Post your thoughts, share ideas, and connect with people!</span>

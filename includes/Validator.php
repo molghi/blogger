@@ -38,6 +38,17 @@
 
         // ================================================================================
 
+        public function is_title_good (string $title): bool {
+            $title = trim($title);
+            $result = true;
+            if (strlen($title) > 255) {
+                $result = false;
+            }
+            return $result;
+        }
+
+        // ================================================================================
+
         // check if username doesn't start with num and not too long
         public function is_username_valid (string $username): bool {
             $username = trim($username);
@@ -95,5 +106,65 @@
         public function is_valid_date (string $passed_date):bool {
             $d = DateTime::createFromFormat('Y-m-d', $passed_date);  // use PHP’s DateTime class to parse
             return $d && $d->format('Y-m-d') === $passed_date;       // return true if in $d it didn't return false, and if format fn returned the same as what was passed
+        }
+
+        // ================================================================================
+
+        public function is_body_okay (string $body):bool {
+            $result = true;
+
+            if (strlen($body) > 10000) {
+                $result = false;
+            }
+
+            return $result;
+        }
+
+        // ================================================================================
+
+        public function is_visibility_okay ($vis_value):bool {
+            $result = true;
+
+            $accepted = ['0', '1'];
+            
+            
+            if (!in_array($vis_value, $accepted)) {
+                $result = false;
+            }
+
+            return $result;
+        }
+
+        // ================================================================================
+
+        // allow only specific characters:  letters, numbers, parentheses, square brackets, commas, periods, dash, whitespace, and ! ' " # $ % : ; &)
+        public function is_text_field_okay(string $value): bool {
+            return preg_match('/^[a-zA-Z0-9\s\(\)\[\],\.\-!\'"#\$%:;&]*$/u', $value) === 1;
+        }
+
+        // ================================================================================
+
+        public function is_img_okay ($img): bool {
+            $result = true;
+
+            // Check for upload errors
+            if ($img['error'] !== UPLOAD_ERR_OK) return false;
+
+            // Check MIME type
+            if (!str_contains($img['type'], 'image/')) {
+                $result = false;
+            }
+            // Check allowed image formats
+            $allowed = ['jpg', 'jpeg', 'png', 'gif'];
+            $ext = strtolower(pathinfo($img['name'], PATHINFO_EXTENSION));
+            // if (!in_array(explode('/', $img['type'])[1], $allowed)) {$result = false;}
+            if (!in_array($ext, $allowed)) { return false; }
+
+            // Check size
+            $max_size = 5 * 1024 * 1024; // 5 MB in bytes
+            if ($img['size'] > $max_size) {
+                $result = false;
+            }
+            return $result;
         }
     }
