@@ -1,0 +1,36 @@
+# OS-specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# macOS system files
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PHP-specific
+/vendor/
+/composer.lock
+composer.phar
+
+# Logs and caches
+*.log
+*.cache
+*.tmp
+*.bak
+*.swp
+
+# Environment / config
+.env
+.env.*
+
+# Uploaded files
+/uploads/
+/storage/
+
+# Ignore all text files
+*.txt
