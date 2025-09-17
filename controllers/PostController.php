@@ -64,38 +64,29 @@
 
             // if all good:
 
-            // move the uploaded img file from the temporary location to a folder in your project
+            // HANDLE IMAGE UPLOADS
+            // move uploaded img from temp loc to dir in my proj
             if ($cover_image['size'] > 0) {
-                // $target_dir = __DIR__ . '/../uploads/';
-                // if (!is_dir($target_dir)) { mkdir($target_dir, 0755, true); }
-                $target_dir = realpath(__DIR__ . '/..') . '/uploads/';
+                // set target/final dir
+                $target_dir = __DIR__ . '/../uploads/';  // uploads must already exist, w/ writing permissions
 
-                if (!file_exists($target_dir)) {
-                    if (!mkdir($target_dir, 0755, true)) {
-                        die("Failed to create upload directory: $target_dir");
-                    }
-                }
-
-                if (!is_writable($target_dir)) {
-                    die("Upload directory is not writable: $target_dir");
-                }
-                // $filename = basename($_FILES['cover_image']['name']);
+                // extract file extension
                 $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+                
+                // to make names unique
                 $timestamp = time();
-                // $filename = "post-image--$timestamp";
+
+                // name resulting file
                 $filename = "post-image--$timestamp.$ext";
+                
+                // set final path
                 $target_file = $target_dir . $filename;
-                // move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
-                if (move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file)) {
-                    echo "File uploaded successfully!";
-                } else {
-                    echo "Failed to upload file.";
-                    var_dump(error_get_last()); 
-                }
+
+                // move upload to final path
+                move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
             }
 
             // push to db 
-            // $db->create_post($title, $body, $categories, $cover_image, $visibility, $user_id);
             $target_file = substr($target_file, 37); // 37 to slice out the absolute path
             $db->create_post($title, $body, $categories, $target_file, $visibility, $user_id);
 

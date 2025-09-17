@@ -1,0 +1,123 @@
+<!-- POST BLOCK -->
+
+<article class="bg-white dark:bg-gray-900 rounded-xl shadow post-block" data-post-id="<?= $fetched_post['id'] ?>">
+  
+<!-- Title -->
+    <div class="flex items-center justify-between relative mt-4">
+        <a class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 back-btn" href="./home.php">Back</a>
+        
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-6 absolute left-1/2 transform -translate-x-1/2 top-[1px]">
+            <?= htmlspecialchars($fetched_post['title']) ?>
+        </h1>
+    </div>
+
+    <div class="max-w-3xl mx-auto p-6">
+
+  <!-- <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100 text-center post-title"><?= htmlspecialchars($fetched_post['title']) ?></h1> -->
+
+  <!-- Buttons -->
+    <div class="flex space-x-2 justify-end mb-4">
+        <!-- <a href="<?= $post['id'] ?>" class="px-3 py-1 bg-purple-700 hover:opacity-100 opacity-40 text-white rounded-md text-sm comment-post">Comment</a> -->
+        <a href="../public/post-form.php?action=edit&postid=<?= $fetched_post['id'] ?>" class="px-3 py-1 bg-yellow-700 hover:opacity-100 opacity-30 text-white rounded-md text-sm edit-post" title="Edit post">Edit</a>
+        <button class="px-3 py-1 bg-red-700 hover:opacity-100 opacity-30 text-white rounded-md text-sm delete-post" title="Delete post">Delete</button>
+    </div>
+
+  <!-- Image -->
+  <?php if ($fetched_post['image_path']): ?>
+    <div class="mb-10">
+        <img src="<?= htmlspecialchars($fetched_post['image_path']) ?>" alt="Post cover" class="w-full h-full rounded-lg object-cover max-h-[450px]">
+    </div>
+  <?php endif; ?>
+
+  <!-- Body -->
+  <div class="text-gray-700 dark:text-gray-300 mb-10 post-body">
+    <?= htmlspecialchars($fetched_post['body']) ?>
+    <!-- <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque habitant morbi tristique senectus.</p> -->
+  </div>
+
+  <!-- Categories -->
+   <?php if ($fetched_post['categories']): ?>
+   <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+    <span class="font-bold">Categories: </span>
+     <span class="font-medium"><?= htmlspecialchars($fetched_post['categories']) ?></span>
+   </div>
+  <?php endif; ?>
+
+  <!-- Visibility & Created -->
+  <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+    <span>
+        <span class="font-bold">Visibility: </span><?= $fetched_post['visibility'] == '1' ? 'Published' : 'Draft' ?>
+    </span>
+    <span>
+        <span class="font-bold">Created: </span>
+        <span class="post-created"><?= substr(htmlspecialchars($fetched_post['created_at']), 0, -3) ?></span>
+    </span>
+  </div>
+
+  <!-- Divider -->
+  <hr class="border-gray-300 dark:border-gray-700 my-10">
+
+  </div>
+
+</article>
+
+
+<!-- ======================================================================================================================== -->
+<!-- ======================================================================================================================== -->
+
+
+<!-- COMMENTS SECTION -->
+
+<section class="max-w-2xl mx-auto p-4 pt-0 pb-10 bg-white dark:bg-gray-900 rounded-xl shadow">
+  <!-- Heading -->
+  <h2 class="text-2xl text-center font-semibold mb-8 text-gray-900 dark:text-gray-100">Comments</h2>
+
+  <?php if (count($fetched_comments) > 0): ?>
+    <?php foreach($fetched_comments as $comment) :?>
+        <div class="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4 comment" data-comment-id="<?= $comment['id'] ?>">
+            <!-- Username -->
+            <p class="font-medium text-gray-800 dark:text-gray-200 mb-1" data-user-id="<?= $comment['user_id'] ?>">
+                <span class="font-bold"><?= $comment['username']?></span> said:
+            </p>
+
+            <!-- Body -->
+            <p class="text-gray-700 dark:text-gray-300 mb-2 italic">
+                <?= $comment['body']?></span>
+            </p>
+
+            <!-- Footer -->
+            <div class="flex justify-between items-center text-[14px] text-gray-500 dark:text-gray-400">
+                <span>
+                    <span class="font-bold">Date: </span>
+                    <?= substr($comment['created_at'], 0, -3) ?>
+                </span>
+                <button class="text-red-600 hover:underline opacity-50 hover:opacity-100 delete-comment">Delete comment</button>
+            </div>
+        </div>
+    <?php endforeach; ?>
+  <?php else: ?>
+    <div class="italic">Comments will be here...</div>
+  <?php endif; ?>
+
+</section>
+
+
+<!-- ======================================================================================================================== -->
+<!-- ======================================================================================================================== -->
+
+
+<!-- ADD COMMENT FORM -->
+
+<form action="#" method="POST" class="max-w-2xl mx-auto p-4 bg-white dark:bg-gray-900 rounded-xl shadow">
+  <!-- Comment Body -->
+  <label for="comment-body" class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+    Add a Comment
+  </label>
+  <textarea id="comment-body" name="body" rows="3" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100 min-h-[50px] max-h-[500px]"></textarea>
+
+  <!-- Submit -->
+  <button type="submit" 
+    class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300">
+    Post Comment
+  </button>
+</form>

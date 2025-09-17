@@ -26,15 +26,14 @@
 
     // prompt on delete post
     if (document.querySelector('.delete-post')) {
-        document.querySelector('.posts').addEventListener('click', function(e) {
-            if (!e.target.closest('.post')) return;
+        document.querySelector('.post-block').addEventListener('click', function(e) {
             if (!e.target.closest('.delete-post')) return;
-            const title = e.target.closest('.post').querySelector('.post-title').textContent.trim();
-            const body = e.target.closest('.post').querySelector('.post-body').textContent.trim().slice(0,50) + '...';
-            const created = e.target.closest('.post').querySelector('.post-created').textContent.trim();
-            const answer = confirm(`Are you sure you want to delete this post?\n\nTitle: ${title}\nBody: ${body}\nCreated: ${created}`);
+            const title = e.target.closest('.post-block').querySelector('.post-title').textContent.trim();
+            const body = e.target.closest('.post-block').querySelector('.post-body').textContent.trim().slice(0,50) + '...';
+            const created = e.target.closest('.post-block').querySelector('.post-created').textContent.trim();
+            const answer = confirm(`Are you sure you want to delete this post?\n\nTitle: ${title}\nBody: ${body}\nCreated: ${created}\n\nThis action cannot be undone.`);
             if (!answer) return;
-            const postId = e.target.closest('.post').dataset.postId;
+            const postId = e.target.closest('.post-block').dataset.postId;
             submitPostForm(`../public/index.php?action=deletepost&post=${postId}`);
         })
     }

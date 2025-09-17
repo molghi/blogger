@@ -155,4 +155,13 @@
             $stmt->bindParam(":id", $post_id);
             $stmt->execute();
         }
+
+        // ================================================================================================
+
+        public function fetch_comments ($post_id) {
+            $sql = 'SELECT comments.id, comments.post_id, comments.user_id, comments.body, comments.created_at, users.username FROM comments LEFT JOIN users ON comments.user_id = users.id WHERE comments.post_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$post_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
     }

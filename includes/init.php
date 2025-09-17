@@ -12,6 +12,11 @@
         exit();
     }
 
+    if ($user_id && $is_index_page && !isset($_REQUEST['action'])) {
+        header('Location: /php-crash/php-projs/06-blogger/public/home.php');    // take to home page if logged in and accessing index/entry page
+        exit();
+    }
+
     // if ($user_id && !$is_home_page) {
     //     header('Location: /php-crash/php-projs/06-blogger/public/home.php');    // take to home page (all who logged in)
     //     exit();
