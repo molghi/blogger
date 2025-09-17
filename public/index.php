@@ -33,8 +33,17 @@
                 $post->edit($post_id);
                 break;
             case 'deletepost':
-                $post_id = $_REQUEST['post'];
+                $post_id = $_REQUEST['postid'];
                 $post->delete($post_id);
+                break;
+            case 'addcomment':
+                $post_id = $_REQUEST['postid'];
+                $post->add_comment($user_id, $post_id);
+                break;
+            case 'deletecomment':
+                $comment_id = $_REQUEST['commentid'];
+                $post_id = $_REQUEST['postid'];
+                $post->delete_comment($user_id, $comment_id, $post_id);
                 break;
             default: 
                 break;
@@ -56,5 +65,3 @@
 
 <!-- BOTTOM PART -->
 <?php require_once('../views/footer.php'); ?>
-
-<!-- ======================================================================================================================== -->

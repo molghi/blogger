@@ -34,7 +34,7 @@
             const answer = confirm(`Are you sure you want to delete this post?\n\nTitle: ${title}\nBody: ${body}\nCreated: ${created}\n\nThis action cannot be undone.`);
             if (!answer) return;
             const postId = e.target.closest('.post-block').dataset.postId;
-            submitPostForm(`../public/index.php?action=deletepost&post=${postId}`);
+            submitPostForm(`../public/index.php?action=deletepost&postid=${postId}`);
         })
     }
 
@@ -63,6 +63,18 @@
                     return;
                 }
             }
+        })
+    }
+
+    if (document.querySelector('.delete-comment')) {
+        document.querySelector('.comments').addEventListener('click', function(e) {
+            if (!e.target.closest('.delete-comment')) return;
+            const commentText = e.target.closest('.comment').querySelector('.comment-text').textContent.trim().slice(0,50) + '...';
+            const answer = confirm(`Are you sure you want to delete this comment?\n\nComment: ${commentText}\n\nThis action cannot be undone.`);
+            if (!answer) return;
+            const commentId = e.target.closest('.comment').dataset.commentId;
+            const postId = document.querySelector('.post-block').dataset.postId;
+            submitPostForm(`../public/index.php?action=deletecomment&commentid=${commentId}&postid=${postId}`)
         })
     }
 </script>

@@ -28,11 +28,14 @@
   <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-6 sm:space-y-0">
     <!-- Cover Image -->
     <div class="flex-1">
-      <label for="cover_image" class="block text-sm font-medium text-gray-700 dark:text-blue-400">Cover Image (optional)</label>
+      <label for="cover_image" class="block text-sm font-medium text-gray-700 dark:text-blue-400">
+        <?= $mode === 'add' ? 'Cover Image (optional)' : 'Choose <span class="underline">New</span> Cover Image (optional)' ?>
+      </label>
       <input name="cover_image" type="file" id="cover_image" accept="image/png, image/jpeg"
             class="mt-1 block w-full text-gray-700 dark:text-gray-200"
             value="<?php echo $mode === 'add' ? '' : $post_to_edit['image_path']; ?>"
         >
+        <?= $mode === 'edit' ? '<span class="block text-[12px] mt-1 text-[coral]">This will overwrite your existing cover image</span>' : '' ?>
     </div>
 
     <!-- Visibility -->

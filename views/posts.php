@@ -1,16 +1,18 @@
-<div class="posts">
+<div class="posts <?= $view === 'grid' ? 'container mx-auto grid grid-cols-3 gap-y-4 gap-x-8 auto-cols-fr' : '' ?>">
     <?php foreach ($user_posts as $post): ?>
 
-        <div class="relative max-w-3xl mx-auto bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 mb-7 post" data-post-id="<?= $post['id'] ?>">
+        <div class="relative mx-auto bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 mb-7 post <?= $view === 'grid' ? 'w-full' : 'max-w-3xl' ?>" data-post-id="<?= $post['id'] ?>">
     
             <!-- Cover Image -->
             <?php if ($post['image_path']): ?>
                 <div class="hover:opacity-70 transition-all duration-300">
                     <a href="../public/post.php?postid=<?= $post['id'] ?>">
-                        <img alt="Cover Image" src="<?= $post['image_path'] ?>" class="w-full h-auto max-h-[250px] rounded-md object-cover">
+                        <img alt="Cover Image" src="<?= $post['image_path'] ?>" class="w-full max-h-[250px] rounded-md object-cover <?= $view === 'grid' ? 'h-[200px]' : 'h-auto' ?>">
                     </a>
                     <!-- src="<?= $post['image_path'] ?? 'placeholder.jpg' ?>" -->
                 </div>
+            <?php else: ?>
+                <?= $view === 'grid' ? '<a href="../public/post.php?postid=' . $post['id'] . '" class="block h-[200px] bg-[#111] rounded text-white flex items-center justify-center italic hover:opacity-70 transition-all duration-300"><span>No Image</span></a>' : '' ?>
             <?php endif; ?>
 
             <!-- Title -->
@@ -19,7 +21,16 @@
             </h2>
 
             <!-- Body -->
-            <p class="text-gray-800 dark:text-gray-200 whitespace-pre-line post-body"><?= htmlspecialchars(strip_tags($post['body'])) ?></p>
+            <div class="text-gray-800 dark:text-gray-200 post-body">
+                <?php
+                    $ending = '';
+                    if ($view === 'list' && strlen(htmlspecialchars(strip_tags($post['body']))) > 295) { $ending = '...'; }
+                    if ($view === 'grid' && strlen(htmlspecialchars(strip_tags($post['body']))) > 180) { $ending = '...'; }
+                ?>
+                <?php echo $view === 'list' 
+                    ? substr(htmlspecialchars(strip_tags($post['body'])), 0, 295) . $ending 
+                    : substr(htmlspecialchars(strip_tags($post['body'])), 0, 180) . $ending ?>
+            </div>
 
             <!-- Categories -->
             <?php if (!empty($post['categories'])): ?>

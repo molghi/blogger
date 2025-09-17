@@ -144,12 +144,16 @@
         // ================================================================================================
 
         public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id) {
-            $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            if (!$cover_image) {
+                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            } else {
+                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            }
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(":title", $title);
             $stmt->bindParam(":body", $body);
             $stmt->bindParam(":categories", $categories);
-            $stmt->bindParam(":image_path", $cover_image);
+            if ($cover_image !== null) { $stmt->bindParam(":image_path", $cover_image); }
             $stmt->bindParam(":visibility", $visibility);
             $stmt->bindParam(":user_id", $user_id);
             $stmt->bindParam(":id", $post_id);
@@ -163,5 +167,21 @@
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$post_id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function add_comment ($post_id, $user_id, $body) {
+            $sql = 'INSERT INTO comments (post_id, user_id, body) VALUES (?, ?, ?)';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$post_id, $user_id, $body]);
+        }
+
+        // ================================================================================================
+
+        public function delete_comment ($user_id, $comment_id) {
+            $sql = 'DELETE FROM comments WHERE id = ? AND user_id = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$comment_id, $user_id]);
         }
     }

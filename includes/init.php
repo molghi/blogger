@@ -8,13 +8,15 @@
     $is_home_page = str_contains($_SERVER['SCRIPT_FILENAME'], 'home.php');
 
     if (!$user_id && !$is_index_page) {
-        header('Location: /php-crash/php-projs/06-blogger/public/index.php');    // take to entry page (all who not logged in)
+        header('Location: ../public/index.php');    // take to entry page (all who not logged in)
         exit();
     }
-
-    if ($user_id && $is_index_page && !isset($_REQUEST['action'])) {
-        header('Location: /php-crash/php-projs/06-blogger/public/home.php');    // take to home page if logged in and accessing index/entry page
-        exit();
+    
+    $action_attr = isset($_REQUEST['action']) ? trim($_REQUEST['action']) : null;
+    $req_meth = $_SERVER['REQUEST_METHOD'];
+    
+    if ($user_id && $is_index_page && !$action_attr) { 
+        header('Location: ../public/home.php');    // take home if logged in & accessing index/entry page without any attr
     }
 
     // if ($user_id && !$is_home_page) {

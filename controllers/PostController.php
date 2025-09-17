@@ -158,7 +158,32 @@
             }
 
             // if all good, push to db & redirect to home
-            $db->edit_post($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id);
+            // HANDLE IMAGE UPLOADS
+            // move uploaded img from temp loc to dir in my proj
+            if ($cover_image['size'] > 0) {
+                // set target/final dir
+                $target_dir = __DIR__ . '/../uploads/';  // uploads must already exist, w/ writing permissions
+
+                // extract file extension
+                $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+                
+                // to make names unique
+                $timestamp = time();
+
+                // name resulting file
+                $filename = "post-image--$timestamp.$ext";
+                
+                // set final path
+                $target_file = $target_dir . $filename;
+
+                // move upload to final path
+                move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
+                
+                $target_file = substr($target_file, 37); // 37 to slice out the absolute path
+            } else $target_file = null;
+            
+            // push to db 
+            $db->edit_post($title, $body, $categories, $target_file, $visibility, $user_id, $post_id);
             header('Location: /php-crash/php-projs/06-blogger/public/home.php');
             exit();  
         }
@@ -176,9 +201,45 @@
 
         // ===========================
 
-        public function redirect_with_error (string $msg_type, string $msg, string $page) {
+        private function redirect_with_error (string $msg_type, string $msg, string $page) {
             $_SESSION[$msg_type] = $msg;
             header("Location: $page");
+            exit();
+        }
+
+        // ===========================
+
+        public function add_comment ($user_id, $post_id) {
+            global $val;
+            global $db;
+
+            // get data
+            $comment_body = trim($_POST['body']);
+            $user_id = trim($user_id);
+            $post_id = trim($post_id);
+            
+            // validate
+            // $has_empty_field = $val->has_empty_field([$comment_body, $user_id, $post_id]);
+            $has_empty_field = $val->has_empty_field([$comment_body]);
+            if ($has_empty_field) {
+                $this->redirect_with_error('error_comment', 'Comment body cannot be empty!', "../public/post.php?postid=$post_id");
+            }
+
+            // push to db
+            $db->add_comment($post_id, $user_id, $comment_body);
+
+            // redirect to the same post page
+            header("Location: /php-crash/php-projs/06-blogger/public/post.php?postid=$post_id");
+        }
+
+        // ===========================
+
+        public function delete_comment ($user_id, $comment_id, $post_id) {
+            global $db;
+
+            $db->delete_comment($user_id, $comment_id);
+
+            header("Location: /php-crash/php-projs/06-blogger/public/post.php?postid=$post_id");
             exit();
         }
     }
