@@ -9,9 +9,36 @@
     require_once('../includes/Database.php');
     $db = new Database;
 
-    // fetch user posts
-    $user_posts = $db->get_user_posts($user_id);
+    // define posts per page
+    // $posts_per_page = 9;
+    $posts_per_page = 3;
 
+    // fetch total num of posts in db
+    $all_posts_count = $db->get_num_of_posts()['count'];
+
+    // get how many pages there'll be
+    $pages = ceil($all_posts_count / $posts_per_page);
+
+    // define current page
+    $current_page = isset($_SESSION['current_page']) ? $_SESSION['current_page'] : 1;
+    if (isset($_REQUEST['current_page'])) { $current_page = $_REQUEST['current_page']; }
+    // handle out of bounds
+    if ($current_page < 1) {
+        $current_page = 1;   
+        header("Location: {$_SERVER['PHP_SELF']}?current_page=$current_page");
+    }
+    if ($current_page > $pages) {
+        $current_page = $pages;
+        header("Location: {$_SERVER['PHP_SELF']}?current_page=$current_page");
+    }
+    $_SESSION['current_page'] = $current_page;
+
+    // fetch user posts
+    // $user_posts = $db->get_user_posts($user_id);
+    // $user_posts = $db->get_all_posts();
+    $user_posts = $db->get_posts_for_page($current_page, $posts_per_page);
+
+    // configure posts view
     $view = isset($_SESSION['view']) ? $_SESSION['view'] : 'list';
     if (isset($_REQUEST['view'])) { $view = $_REQUEST['view']; }
     $_SESSION['view'] = $view;
@@ -28,24 +55,13 @@
 <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-6">Recent Posts</h1>
 
 <?php if (count($user_posts) > 0): ?>
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-500 text-center mb-2">User posts count: <?php echo count($user_posts); ?></h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-500 text-center mb-2">Total posts count: <?php echo $all_posts_count; ?></h2>
     <!-- Btns toggling view -->
-     <div class="flex items-center space-x-2 max-w-[768px] mx-auto justify-end mt-[-0px] mb-5 opacity-30 hover:opacity-100">
-        <span>View: </span>
-        <!-- List view button -->
-        <a <?= $view === 'grid' ? 'href="home.php?view=list"' : '' ?> class="inline-flex items-center gap-x-2 py-2 px-4 text-sm font-medium rounded-lg border border-gray-600 text-gray-200 outline-none <?= $view === 'list' ? 'bg-blue-700' : 'hover:bg-gray-700 active:opacity-70 bg-gray-800' ?>" <?= $view === 'list' ? 'disabled' : '' ?>>
-            <i class="fa-solid fa-list"></i>
-            List
-        </a>
-
-        <!-- Grid view button -->
-        <a <?= $view === 'list' ? 'href="home.php?view=grid"' : '' ?> class="inline-flex items-center gap-x-2 py-2 px-4 text-sm font-medium rounded-lg border border-gray-600 text-gray-200 outline-none <?= $view === 'grid' ? 'bg-blue-700' : 'hover:bg-gray-700 active:opacity-70 bg-gray-800' ?>" <?= $view === 'grid' ? 'disabled' : '' ?>>
-            <i class="fa-solid fa-th"></i>
-            Grid
-        </a>
-    </div>
+    <?php require_once('../views/view-btns.php'); ?>
     <!-- RENDER POSTS -->
     <?php require_once('../views/posts.php'); ?>
+    <!-- Pagination -->
+    <?php require_once('../views/pagination.php'); ?>
 <?php else: ?>
     <h2 class="text-xl font-semibold italic text-gray-800 dark:text-gray-500 text-center">No posts to show...</h2>
 <?php endif; ?>

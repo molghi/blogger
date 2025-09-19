@@ -25,17 +25,20 @@
   </div>
 
   <!-- Cover Image & Visibility -->
-  <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-6 space-y-6 sm:space-y-0">
+  <div class="flex flex-col sm:flex-row sm:space-x-6 space-y-6 sm:space-y-0">
     <!-- Cover Image -->
     <div class="flex-1">
       <label for="cover_image" class="block text-sm font-medium text-gray-700 dark:text-blue-400">
-        <?= $mode === 'add' ? 'Cover Image (optional)' : 'Choose <span class="underline">New</span> Cover Image (optional)' ?>
+        <?php 
+        $to_echo = $mode === 'add' ? 'Cover Image (optional)' : 'Choose <span class="underline">New</span> Cover Image (optional)'; 
+        echo $post_to_edit['image_path'] ? $to_echo : 'Choose Cover Image (optional)'; ?>
       </label>
       <input name="cover_image" type="file" id="cover_image" accept="image/png, image/jpeg"
             class="mt-1 block w-full text-gray-700 dark:text-gray-200"
             value="<?php echo $mode === 'add' ? '' : $post_to_edit['image_path']; ?>"
         >
-        <?= $mode === 'edit' ? '<span class="block text-[12px] mt-1 text-[coral]">This will overwrite your existing cover image</span>' : '' ?>
+        <?= $mode === 'edit' && $post_to_edit['image_path']  ? '<span class="block text-[12px] mt-1 text-[coral]">This will overwrite your existing cover image</span>' : '' ?>
+        <?php echo $mode === 'edit' && $post_to_edit['image_path'] ? '<button type="button" class="text-white mt-4 font-medium py-2 px-4 rounded-md bg-gray-700 hover:bg-gray-600 delete-cover">Delete existing cover image</button>' : ''; ?>
     </div>
 
     <!-- Visibility -->

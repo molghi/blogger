@@ -71,19 +71,23 @@
                 $target_dir = __DIR__ . '/../uploads/';  // uploads must already exist, w/ writing permissions
 
                 // extract file extension
-                $ext = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
+                $extension = pathinfo($_FILES['cover_image']['name'], PATHINFO_EXTENSION);
                 
                 // to make names unique
                 $timestamp = time();
 
                 // name resulting file
-                $filename = "post-image--$timestamp.$ext";
+                $filename = "post-image--$timestamp.$extension";
                 
                 // set final path
                 $target_file = $target_dir . $filename;
 
                 // move upload to final path
-                move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
+                // move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
+
+                // Directly compress + save from tmp_name
+                // $this->compress_image($_FILES['cover_image']['tmp_name'], $target_file);  
+                $this->compress_image($_FILES['cover_image'], $target_file);  
             }
 
             // push to db 
@@ -160,7 +164,7 @@
             // if all good, push to db & redirect to home
             // HANDLE IMAGE UPLOADS
             // move uploaded img from temp loc to dir in my proj
-            if ($cover_image['size'] > 0) {
+            if ($cover_image && $cover_image['size'] > 0) {
                 // set target/final dir
                 $target_dir = __DIR__ . '/../uploads/';  // uploads must already exist, w/ writing permissions
 
@@ -177,7 +181,11 @@
                 $target_file = $target_dir . $filename;
 
                 // move upload to final path
-                move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
+                // move_uploaded_file($_FILES['cover_image']['tmp_name'], $target_file);
+
+                // Directly compress + save from tmp_name
+                // $this->compress_image($_FILES['cover_image']['tmp_name'], $target_file);
+                $this->compress_image($_FILES['cover_image'], $target_file);
                 
                 $target_file = substr($target_file, 37); // 37 to slice out the absolute path
             } else $target_file = null;
@@ -241,5 +249,33 @@
 
             header("Location: /php-crash/php-projs/06-blogger/public/post.php?postid=$post_id");
             exit();
+        }
+
+        // ===========================
+
+        private function compress_image (array $img, string $destination, int $quality = 75): bool {
+            $extension = explode('/', $img['type'])[1];   // extract file extension from MIME type
+
+            switch ($extension) {
+                case 'png':
+                    $image = imagecreatefrompng($img['tmp_name']); // load PNG from temp upload
+                    $result = imagepng($image, $destination, 6);  // save PNG with compression lvl 6 --> 0 (no compression) – 9 (max compression)
+                    break;
+
+                case 'gif':
+                    $image = imagecreatefromgif($img['tmp_name']);  // load GIF from temp upload
+                    $result = imagegif($image, $destination);  // save GIF (no compression available)
+                    break;
+
+                case 'jpeg':
+                case 'jpg':
+                default:
+                    $image = imagecreatefromjpeg($img['tmp_name']); // load JPEG from temp upload
+                    $result = imagejpeg($image, $destination, $quality);  // save JPEG with quality 0–100
+                    break;
+            }
+
+            imagedestroy($image);  // free memory used by the image resource
+            return $result;  // return true on success, false on failure
         }
     }

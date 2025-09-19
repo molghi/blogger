@@ -14,6 +14,12 @@
         form.action = actionString;
         document.body.appendChild(form); form.submit();
     }
+    // submit GET form to some page
+    function submitGetForm(actionString) {      
+        const form = document.createElement("form"); form.method = "GET";
+        form.action = actionString;
+        document.body.appendChild(form); form.submit();
+    }
 
     // prompt on logout
     if (document.querySelector('.logout-btn')) {
@@ -75,6 +81,33 @@
             const commentId = e.target.closest('.comment').dataset.commentId;
             const postId = document.querySelector('.post-block').dataset.postId;
             submitPostForm(`../public/index.php?action=deletecomment&commentid=${commentId}&postid=${postId}`)
+        })
+    }
+
+    // delete cover image
+    if (document.querySelector('.delete-cover')) {
+        document.querySelector('.delete-cover').addEventListener('click', function(e) {
+            // e.target.closest('form').querySelector('input#cover_image').setAttribute('value', '');
+            e.target.closest('form').querySelector('#cover_image').removeAttribute('name');
+            e.target.closest('form').querySelector('#cover_image').removeAttribute('value');
+            e.target.remove();
+        })
+    }
+
+    // implement pagination
+    if (document.querySelector('.pagination')) {
+        document.querySelector('.pagination').addEventListener('click', function(e) {
+            if (!e.target.closest('button')) return;
+            const clickedPage = e.target.closest('button').dataset.page;
+ 
+            if (!isNaN(+clickedPage)) {
+                location.href = `../public/home.php?current_page=${clickedPage}`;
+            } else {
+                const currentPage = location.search ? +location.search.split('=')[1] : 1;
+                const clickedBtn = e.target.closest('button').dataset.page;
+                const pageToGo = clickedBtn === 'prev' ? currentPage - 1 : currentPage + 1;
+                location.href = `../public/home.php?current_page=${pageToGo}`;
+            }
         })
     }
 </script>

@@ -7,10 +7,10 @@
     $is_index_page = str_contains($_SERVER['SCRIPT_FILENAME'], 'index.php');
     $is_home_page = str_contains($_SERVER['SCRIPT_FILENAME'], 'home.php');
 
-    if (!$user_id && !$is_index_page) {
-        header('Location: ../public/index.php');    // take to entry page (all who not logged in)
-        exit();
-    }
+    // if (!$user_id && !$is_index_page) {
+    //     header('Location: ../public/index.php');    // take to entry page (all who not logged in)
+    //     exit();
+    // }
     
     $action_attr = isset($_REQUEST['action']) ? trim($_REQUEST['action']) : null;
     $req_meth = $_SERVER['REQUEST_METHOD'];

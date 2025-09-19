@@ -42,7 +42,11 @@
                 <a href="../public/post-form.php?action=add" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md active:opacity-70 add-post-btn">Add Post</a>
                 <button class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md active:opacity-70 logout-btn">Log Out</button>
             <?php else: ?>
-                <span class="italic">Post your thoughts, share ideas, and connect with people!</span>
+                <div class="flex items-center gap-5">
+                    <span class="italic mr-[50px]">Post your thoughts, share ideas, and connect with people!</span>
+                    <a href="../public/home.php" class="px-4 py-2 bg-blue-400 hover:bg-blue-500 rounded-md active:opacity-70 add-post-btn">View Posts</a>
+                    <a href="../public/index.php" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md active:opacity-70 add-post-btn">Log In | Sign Up</a>
+                </div>
             <?php endif; ?>
         </div>
         

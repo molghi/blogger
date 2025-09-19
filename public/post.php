@@ -15,7 +15,8 @@
         exit();
     }
     
-    $fetched_post = $db->get_post($user_id, $post_id);
+    // $fetched_post = $db->get_user_post($user_id, $post_id);
+    $fetched_post = $db->get_post($post_id);
 
     $fetched_comments = $db->fetch_comments($post_id);
 ?>

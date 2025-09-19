@@ -107,6 +107,15 @@
         }
 
         // ================================================================================================
+
+        public function get_all_posts () {
+            $sql = 'SELECT * FROM posts ORDER BY created_at DESC';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
         
         public function create_post ($title, $body, $categories, $image_path, $visibility, $user_id) {
             $sql = "INSERT INTO posts (title, body, categories, image_path, visibility, user_id) VALUES (:title, :body, :categories, :image_path, :visibility, :user_id)";
@@ -132,7 +141,7 @@
 
         // ================================================================================================
 
-        public function get_post ($user_id, $post_id) {
+        public function get_user_post ($user_id, $post_id) {
             $sql = 'SELECT * FROM posts WHERE id = :id AND user_id = :user_id LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->bindParam(":id", $post_id);
@@ -143,17 +152,37 @@
 
         // ================================================================================================
 
-        public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id) {
-            if (!$cover_image) {
-                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, visibility = :visibility WHERE id = :id AND user_id = :user_id';
-            } else {
-                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
-            }
+        public function get_post ($post_id) {
+            $sql = 'SELECT posts.id, posts.title, posts.body, posts.categories, posts.image_path, posts.visibility, posts.user_id, posts.created_at, posts.modified_at, users.username
+            FROM posts LEFT JOIN users ON posts.user_id = users.id WHERE posts.id = :id LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(":id", $post_id);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id) {
+            $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+
+            $stmt = $this->pdo->prepare($sql);
+            
             $stmt->bindParam(":title", $title);
             $stmt->bindParam(":body", $body);
             $stmt->bindParam(":categories", $categories);
-            if ($cover_image !== null) { $stmt->bindParam(":image_path", $cover_image); }
+
+            echo $cover_image;
+            exit();
+
+            // $null_path = null;
+            $image_path = $cover_image ? $cover_image : null;
+            $stmt->bindParam(":image_path", $image_path);
+            // if ($cover_image) { 
+            //     $stmt->bindParam(":image_path", $cover_image); 
+            // } else {
+            //     $stmt->bindParam(":image_path", $null_path); 
+            // }
             $stmt->bindParam(":visibility", $visibility);
             $stmt->bindParam(":user_id", $user_id);
             $stmt->bindParam(":id", $post_id);
@@ -183,5 +212,30 @@
             $sql = 'DELETE FROM comments WHERE id = ? AND user_id = ?';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$comment_id, $user_id]);
+        }
+
+        // ================================================================================================
+
+        public function get_num_of_posts () {
+            $sql = 'SELECT COUNT(*) AS count FROM posts';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function get_posts_for_page ($page, $posts_per_page) {
+            $start_from = 0;
+
+            if ($page > 1) {
+                $start_from = ($page-1) * $posts_per_page;
+            }
+
+            $posts_per_page = (int) $posts_per_page;
+            // because limit params cannot be bound as placeholders
+            $sql = "SELECT * FROM posts ORDER BY created_at DESC LIMIT $start_from, $posts_per_page";
+            $stmt = $this->pdo->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
     }
