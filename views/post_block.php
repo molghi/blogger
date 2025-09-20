@@ -3,8 +3,8 @@
 <article class="bg-white dark:bg-gray-900 rounded-xl shadow post-block" data-post-id="<?= $fetched_post['id'] ?>">
   
     <!-- Title -->
-    <div class="flex items-center justify-between relative mt-4">
-        <a class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 back-btn" href="./home.php">Back</a>
+    <div class="container mx-auto flex items-center justify-between relative mt-4">
+        <a class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 back-btn" href="./home.php">Back Home</a>
         
         <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 text-center mb-6 absolute left-1/2 transform -translate-x-1/2 top-[1px] post-title">
             <?= htmlspecialchars($fetched_post['title']) ?>
@@ -28,7 +28,7 @@
   <!-- Image -->
   <?php if ($fetched_post['image_path']): ?>
     <div class="mb-6 overflow-hidden rounded-lg">
-        <img src="<?= htmlspecialchars($fetched_post['image_path']) ?>" alt="Post cover" class="w-full h-full object-cover max-h-[450px] transition-transform duration-1000 ease-in-out hover:scale-105 shadow-md">
+        <img src="<?= htmlspecialchars($fetched_post['image_path']) ?>" alt="Post cover" class="w-full object-cover max-h-[450px] transition-transform duration-1000 ease-in-out hover:scale-105 shadow-md">
     </div>
   <?php endif; ?>
 

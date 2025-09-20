@@ -18,7 +18,19 @@
     // $fetched_post = $db->get_user_post($user_id, $post_id);
     $fetched_post = $db->get_post($post_id);
 
+    if (!$fetched_post) {
+        header("Location: ./home.php?page=1");
+        exit();
+    }
+
     $fetched_comments = $db->fetch_comments($post_id);
+
+    // echo (int) $fetched_post['visibility'] === 1 ? 'show post to all' : 'hide post from all';
+
+    if ((int) $fetched_post['visibility'] === 0 && (int) $fetched_post['user_id'] !== (int) $user_id) {
+        header("Location: ./home.php?page=1");   // if this drafted post is not the post of the currently logged in user, take back home
+        exit();
+    }
 ?>
 
 <!-- ======================================================================================================================== -->

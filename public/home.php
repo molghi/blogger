@@ -14,29 +14,32 @@
     $posts_per_page = 3;
 
     // fetch total num of posts in db
-    $all_posts_count = $db->get_num_of_posts()['count'];
+    if (!$user_id) $all_posts_count = $db->get_num_of_posts()['count'];
+    else $all_posts_count = $db->get_num_of_posts_loggedin($user_id)['count'];
 
     // get how many pages there'll be
     $pages = ceil($all_posts_count / $posts_per_page);
+    if ($all_posts_count === 0) $pages = 1; // Edge case: when $all_posts_count = 0, $pages will be 0, which might break "if ($current_page > $pages)" logic.
 
     // define current page
     $current_page = isset($_SESSION['current_page']) ? $_SESSION['current_page'] : 1;
-    if (isset($_REQUEST['current_page'])) { $current_page = $_REQUEST['current_page']; }
+    if (isset($_REQUEST['page'])) { $current_page = $_REQUEST['page']; }
+    // if (!isset($_REQUEST['page'])) { $current_page = 1; }
     // handle out of bounds
     if ($current_page < 1) {
         $current_page = 1;   
-        header("Location: {$_SERVER['PHP_SELF']}?current_page=$current_page");
+        header("Location: {$_SERVER['PHP_SELF']}?page=$current_page");
     }
     if ($current_page > $pages) {
         $current_page = $pages;
-        header("Location: {$_SERVER['PHP_SELF']}?current_page=$current_page");
+        header("Location: {$_SERVER['PHP_SELF']}?page=$current_page");
     }
     $_SESSION['current_page'] = $current_page;
 
     // fetch user posts
     // $user_posts = $db->get_user_posts($user_id);
     // $user_posts = $db->get_all_posts();
-    $user_posts = $db->get_posts_for_page($current_page, $posts_per_page);
+    $user_posts = $db->get_posts_for_page($current_page, $posts_per_page, $user_id);
 
     // configure posts view
     $view = isset($_SESSION['view']) ? $_SESSION['view'] : 'list';

@@ -16,7 +16,6 @@
 
 <!-- ======================================================================================================================== -->
 
-<?= 'current page is ' . $current_page ?>
 <div class="flex justify-center space-x-2 my-10 pagination">
   <!-- Previous button -->
    <?php if ($current_page > 1):?>
@@ -43,13 +42,3 @@
   </button>
   <?php endif; ?>
 </div>
-
-<!-- 
-
-Minor considerations to potentially improve later:
-
-- Query parameters: currently I rebuild ?current_page=..., losing other GET parameters if present.
-- Performance: for very large tables, COUNT(*) might slow queries — can be optimized with indexes.
-- Edge case: when $all_posts_count = 0, $pages will be 0, which might break if ($current_page > $pages) logic. I may want max(1, ceil(...)).
-
--->

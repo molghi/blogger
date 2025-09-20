@@ -23,3 +23,24 @@
     //     header('Location: /php-crash/php-projs/06-blogger/public/home.php');    // take to home page (all who logged in)
     //     exit();
     // }
+
+    // Handle accessing non-existent pages
+    $request = basename(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)); // extract script name
+
+    $routes = [
+        'home.php',
+        'index.php',
+        'post-form.php',
+        'post.php',
+        'user_panel.php',
+        'change-details.php',
+    ];
+
+    if (str_contains($request, 'not_found.php') && !isset($_SESSION['not-found'])) {
+        header("Location: ../public/home.php?page=1");
+    } elseif (!in_array($request, $routes)) {
+        http_response_code(404);
+        // header("Location: ../public/not_found.php");  // Sending a 302 redirect to a 404 page after setting http_response_code(404) is contradictory
+        require '../public/not_found.php';
+        $_SESSION['not-found'] = true;
+    }

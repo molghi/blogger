@@ -108,6 +108,20 @@
 
         // ================================================================================================
 
+        // fetch num of comments to each post
+        public function get_user_posts_comments ($user_id) {
+            $sql = "SELECT posts.id, COUNT(comments.id) AS count 
+                    FROM posts 
+                    LEFT JOIN comments ON posts.id = comments.post_id 
+                    WHERE posts.user_id = ? 
+                    GROUP BY posts.id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$user_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
         public function get_all_posts () {
             $sql = 'SELECT * FROM posts ORDER BY created_at DESC';
             $stmt = $this->pdo->prepare($sql);
@@ -163,8 +177,17 @@
 
         // ================================================================================================
 
-        public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id) {
-            $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+        public function edit_post ($title, $body, $categories, $cover_image, $visibility, $user_id, $post_id, $cover_image_flag) {
+            if ($cover_image_flag === 'keep-current') {
+                // do not upd image_path
+                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            } elseif ($cover_image_flag === 'delete-existing') {
+                // upd image_path to null
+                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = NULL, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            } elseif ($cover_image_flag === 'upload-new') {
+                // upd image_path to new img path
+                $sql = 'UPDATE posts SET title = :title, body = :body, categories = :categories, image_path = :image_path, visibility = :visibility WHERE id = :id AND user_id = :user_id';
+            }
 
             $stmt = $this->pdo->prepare($sql);
             
@@ -172,17 +195,14 @@
             $stmt->bindParam(":body", $body);
             $stmt->bindParam(":categories", $categories);
 
-            echo $cover_image;
-            exit();
+            // echo "db->edit_post: ";
+            // echo $cover_image_flag;
+            // exit();
 
-            // $null_path = null;
-            $image_path = $cover_image ? $cover_image : null;
-            $stmt->bindParam(":image_path", $image_path);
-            // if ($cover_image) { 
-            //     $stmt->bindParam(":image_path", $cover_image); 
-            // } else {
-            //     $stmt->bindParam(":image_path", $null_path); 
-            // }
+            if ($cover_image_flag === 'upload-new') {
+                $stmt->bindParam(":image_path", $cover_image);
+            }
+
             $stmt->bindParam(":visibility", $visibility);
             $stmt->bindParam(":user_id", $user_id);
             $stmt->bindParam(":id", $post_id);
@@ -216,8 +236,9 @@
 
         // ================================================================================================
 
+        // get all published posts of all users
         public function get_num_of_posts () {
-            $sql = 'SELECT COUNT(*) AS count FROM posts';
+            $sql = 'SELECT COUNT(*) AS count FROM posts WHERE visibility = 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute();
             return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -225,17 +246,56 @@
 
         // ================================================================================================
 
-        public function get_posts_for_page ($page, $posts_per_page) {
+        // get all published posts of all users -- and unpublished posts of logged in user
+        public function get_num_of_posts_loggedin ($user_id) {
+            $sql = 'SELECT COUNT(*) AS count FROM posts WHERE visibility = 1 OR (visibility = 0 AND user_id = ?)';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$user_id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function get_posts_for_page ($page, $posts_per_page, $user_id) {
             $start_from = 0;
-
-            if ($page > 1) {
-                $start_from = ($page-1) * $posts_per_page;
-            }
-
             $posts_per_page = (int) $posts_per_page;
-            // because limit params cannot be bound as placeholders
-            $sql = "SELECT * FROM posts ORDER BY created_at DESC LIMIT $start_from, $posts_per_page";
+
+            if ($page > 1) { $start_from = ($page - 1) * $posts_per_page; }
+
+            // fetch all published posts BUT fetch drafted posts only of passed user
+
+            $additional_condition = !$user_id ? '' : "OR (visibility = 0 AND user_id = " . htmlspecialchars((string) $user_id) . ")";
+            
+            $sql = "SELECT * FROM posts 
+                    WHERE visibility = 1 $additional_condition
+                    ORDER BY created_at DESC 
+                    LIMIT $start_from, $posts_per_page";  // limit params cannot be bound as placeholders
             $stmt = $this->pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        // ================================================================================================
+
+        public function get_username ($user_id) {
+            $sql = 'SELECT username FROM users WHERE id = ? LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$user_id]);
+            return $stmt->fetchColumn();
+        }
+
+        // ================================================================================================
+
+        public function update_username ($user_id, $new_username) {
+            $sql = "UPDATE users SET username = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$new_username, $user_id]);
+        }
+
+        // ================================================================================================
+
+        public function update_password ($user_id, $new_pw) {
+            $sql = "UPDATE users SET password = ? WHERE id = ?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$new_pw, $user_id]);
         }
     }

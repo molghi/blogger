@@ -30,8 +30,9 @@
     <div class="flex-1">
       <label for="cover_image" class="block text-sm font-medium text-gray-700 dark:text-blue-400">
         <?php 
-        $to_echo = $mode === 'add' ? 'Cover Image (optional)' : 'Choose <span class="underline">New</span> Cover Image (optional)'; 
-        echo $post_to_edit['image_path'] ? $to_echo : 'Choose Cover Image (optional)'; ?>
+            $to_echo = $mode === 'add' ? 'Cover Image (optional)' : 'Choose <span class="underline">New</span> Cover Image (optional)'; 
+            echo isset($post_to_edit) && $post_to_edit['image_path'] ? $to_echo : 'Choose Cover Image (optional)'; 
+        ?>
       </label>
       <input name="cover_image" type="file" id="cover_image" accept="image/png, image/jpeg"
             class="mt-1 block w-full text-gray-700 dark:text-gray-200"
@@ -68,6 +69,10 @@
         <?php echo $mode === 'add' ? 'Add' : 'Edit'; ?>
     </button>
   </div>
+
+  <?php if ($mode === 'edit'): ?>
+    <input type="hidden" name="cover_image_flag" value="keep-current">
+  <?php endif; ?>
 
    <!-- OUTPUT ERRORS -->
     <?php if (isset($_SESSION['post_error'])): ?>

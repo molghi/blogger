@@ -45,6 +45,15 @@
                 $post_id = $_REQUEST['postid'];
                 $post->delete_comment($user_id, $comment_id, $post_id);
                 break;
+            case 'updateusername':
+                $new_username = $_POST['username'];
+                $auth->upd_username($user_id, $new_username);
+                break;
+            case 'updatepassword':
+                $new_pw_1 = $_POST['password-1'];
+                $new_pw_2 = $_POST['password-2'];
+                $auth->upd_password($user_id, $new_pw_1, $new_pw_2);
+                break;
             default: 
                 break;
         }

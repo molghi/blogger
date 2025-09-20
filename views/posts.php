@@ -1,4 +1,4 @@
-<div class="posts <?= $view === 'grid' ? 'container mx-auto grid grid-cols-3 gap-y-4 gap-x-8 auto-cols-fr' : '' ?>">
+<div class="posts <?= $view === 'grid' ? 'container mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-4 gap-x-8 auto-cols-fr' : '' ?>">
     <?php foreach ($user_posts as $post): ?>
 
         <div class="relative mx-auto bg-gray-100 dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4 mb-7 post <?= $view === 'grid' ? 'w-full' : 'max-w-3xl' ?>" data-post-id="<?= $post['id'] ?>">

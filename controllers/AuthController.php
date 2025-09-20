@@ -4,6 +4,8 @@
 
         private $index_page = '/php-crash/php-projs/06-blogger/public/index.php';    // entry page
         private $home_page = '/php-crash/php-projs/06-blogger/public/home.php';
+        private $upd_form_page = '/php-crash/php-projs/06-blogger/public/change-details.php';
+        private $panel_page = '/php-crash/php-projs/06-blogger/public/user_panel.php';
         private $db = null;
         private $val = null;
 
@@ -99,5 +101,55 @@
             $_SESSION[$msg_type] = $msg;
             header("Location: $page");
             exit();
+        }
+        
+        // ================================================================================================================
+
+        public function upd_username ($user_id, $new_username) {
+            global $db;
+            global $val;
+            
+            // validate
+            $has_empty_field = $val->has_empty_field([$new_username]);
+            if ($has_empty_field) {
+                $this->redirect_with_error('error_msg_update', 'Username cannot be empty!', $this->upd_form_page . '?action=username');
+            }
+
+            $is_username_valid = $val->is_username_valid($new_username);
+            if (!$is_username_valid) {
+                $this->redirect_with_error('error_msg_update', 'Username is either too long or starts with a number!', $this->upd_form_page . '?action=username');
+            }
+
+            // if errors, redir & output em --> $_SESSION['error_msg_update']
+
+            // if all good, run upd query & redir
+            $db->update_username($user_id, $new_username);
+            header("Location: $this->panel_page");
+        }
+
+        // ================================================================================================================
+
+        public function upd_password ($user_id, $new_pw_1, $new_pw_2) {
+            global $db;
+            global $val;
+
+            // validate
+            $has_empty_field = $val->has_empty_field([$new_pw_1, $new_pw_2]);
+            if ($has_empty_field) {
+                $this->redirect_with_error('error_msg_update', 'Fill out all fields!', $this->upd_form_page . '?action=password');
+            }
+
+            $are_passwords_good = $val->are_passwords_good($new_pw_1, $new_pw_2);
+            if (!$are_passwords_good) {
+                $this->redirect_with_error('error_msg_update', 'Passwords do not match or are too short!', $this->upd_form_page . '?action=password');
+            }
+
+            // if errors, redir & output em --> $_SESSION['error_msg_update']
+            
+            // if all good, hash it, run upd query & redir
+            $hashed_pw = password_hash($new_pw_1, PASSWORD_DEFAULT);
+            $db->update_password($user_id, $hashed_pw);
+            $_SESSION['pw_upd_msg'] = 'Password updated successfully!';
+            header("Location: $this->panel_page");
         }
     }

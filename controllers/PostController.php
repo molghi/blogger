@@ -113,6 +113,7 @@
             $categories = isset($_POST['categories']) ? trim($_POST['categories']) : null;     // can be empty
             $cover_image = isset($_FILES['cover_image']) && $_FILES['cover_image']['size'] > 0 ? $_FILES['cover_image'] : null;         // can be empty
             $visibility = $_POST['visibility'];           // cannot be empty: one of two values
+            $cover_image_flag = $_POST['cover_image_flag'];
 
             // validate no empty fields
             $has_empty_field = $val->has_empty_field([$body, $visibility]);
@@ -191,8 +192,9 @@
             } else $target_file = null;
             
             // push to db 
-            $db->edit_post($title, $body, $categories, $target_file, $visibility, $user_id, $post_id);
-            header('Location: /php-crash/php-projs/06-blogger/public/home.php');
+            $db->edit_post($title, $body, $categories, $target_file, $visibility, $user_id, $post_id, $cover_image_flag);
+            // header('Location: /php-crash/php-projs/06-blogger/public/home.php');
+            header("Location: ../public/post.php?postid=$post_id");
             exit();  
         }
 
