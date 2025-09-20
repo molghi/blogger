@@ -4,14 +4,24 @@
 
     class Database {
 
-        private $host = 'localhost';
-        private $user = 'root';
+        // private $host = 'localhost';
+        // private $user = 'root';
+        // private $pw = '';
+        // private $db_name = 'php_blogger';
+
+        private $host = '';
+        private $user = '';
         private $pw = '';
-        private $db_name = 'php_blogger';
+        private $db_name = '';
 
         private $pdo;
 
-        public function __construct () {
+        public function __construct() {
+            $this->host = getenv('DB_HOST');
+            $this->user = getenv('DB_USER');
+            $this->pw   = getenv('DB_PASS');
+            $this->db_name = getenv('DB_NAME');
+
             $this->pdo_conn();
         }
 
